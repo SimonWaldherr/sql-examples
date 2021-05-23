@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+		<link rel="stylesheet" data-name="./monaco/editor/editor.main" href="./monaco/editor/editor.main.css" />
+		<style>
+.split {
+  height: 100%;
+  width: 50%;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  overflow-x: hidden;
+  padding-top: 0px;
+}
+
+.left {
+  left: 0;
+}
+
+.right {
+  right: 0;
+}
+
+#container {
+  position:fixed;
+  top:0px;
+  bottom:0px;
+}
+
+.rename-input {
+  display:none;
+}
+
+.styled-table {
+    border-collapse: collapse;
+    margin: 25px 0;
+    font-size: 0.9em;
+    font-family: sans-serif;
+    min-width: 400px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+}
+
+.styled-table thead tr {
+    background-color: #009879;
+    color: #ffffff;
+    text-align: left;
+}
+
+.styled-table th, .styled-table td {
+    padding: 12px 15px;
+}
+
+.styled-table tbody tr {
+    border-bottom: 1px solid #dddddd;
+}
+
+.styled-table tbody tr:nth-of-type(even) {
+    background-color: #f4f4f4;
+}
+
+.styled-table tbody tr:last-of-type {
+    border-bottom: 2px solid #009879;
+}
+
+.styled-table tbody tr.active-row {
+    font-weight: bold;
+    color: #009879;
+}
+		</style>
+	</head>
+	<body>
+		<div class="">
+			<div id="container" class="split left"></div>
+			<div class="split right">
+				<h1>SQL-Examples</h1>
+				<div id="error" class="error"></div>
+				<pre id="output">Results will be displayed here</pre>
+			</div>
+		</div>
+		<script>
+			var require = { paths: { vs: './monaco' } };
+		</script>
+		<script src="./monaco/loader.js"></script>
+		<script src="./monaco/editor/editor.main.nls.js"></script>
+		<script src="./monaco/editor/editor.main.js"></script>
+		<script src='./sqljs/sql-wasm.js'></script>
+		<script src='./northwinddb.js'></script>
+
+		<script>
+var db;
+var initValue = `/* Select top 3 customers for each product by sum of sales quantity */
+
+SELECT * FROM (
+SELECT 
+    od.ProductId               AS ProductId,
+	p.ProductName              AS Product,
+	c.CompanyName              AS Customer, 
+	SUM(od.Quantity)           AS Quantity,
+	ROW_NUMBER() OVER(
+		PARTITION BY od.ProductId
+		ORDER BY SUM(od.Quantity) DESC
+	) AS Ranking
+FROM OrderDetail     AS od
+LEFT JOIN [Order]    AS o ON o.Id = od.orderid
+LEFT JOIN [Customer] AS c ON o.customerid = c.Id
+LEFT JOIN [Product]  AS p ON od.ProductId = p.Id
+GROUP BY c.CompanyName, od.ProductId, p.ProductName
+) ProductRankingByCustomer
+WHERE Ranking < 4`;
+
+var editor = monaco.editor.create(document.getElementById('container'), {
+    value: initValue,
+    language: 'sql',
+    lineNumbers: "on",
+    theme: "vs-dark",
+    roundedSelection: true,
+    scrollBeyondLastLine: false
+});
+
+var myBinding = editor.addCommand(monaco.KeyCode.F5, function() {
+    var sqlcontent = '';
+    var selection = editor.getModel().getValueInRange(editor.getSelection());
+    var fullcontent = editor.getValue();
+    if (selection.length == 0) {
+        sqlcontent = fullcontent;
+    } else {
+        sqlcontent = selection;
+    }
+    console.log(sqlcontent);
+    execute(sqlcontent);
+});
+
+config = {
+    locateFile: filename => `./sqljs/${filename}`
+}
+
+initSqlJs(config).then(function(SQL) {
+    db = new SQL.Database();
+    execute(northwind);
+});
+
+var worker = new Worker("./sqljs/worker.sql-wasm.js");
+worker.onerror = error;
+
+function execute(commands) {
+    tic();
+    worker.onmessage = function(event) {
+        var results = event.data.results;
+        toc("Executing SQL");
+        if (!results) {
+            error({
+                message: event.data.error
+            });
+            return;
+        }
+
+        tic();
+        outputElm.innerHTML = "";
+        for (var i = 0; i < results.length; i++) {
+            outputElm.appendChild(tableCreate(results[i].columns, results[i].values));
+        }
+        toc("Displaying results");
+    }
+    worker.postMessage({
+        action: 'exec',
+        sql: commands
+    });
+    outputElm.textContent = "Fetching results...";
+}
+
+var tableCreate = function() {
+    function valconcat(vals, tagName) {
+        if (vals.length === 0) return '';
+        var open = '<' + tagName + '>',
+            close = '</' + tagName + '>';
+        return open + vals.join(close + open) + close;
+    }
+    return function(columns, values) {
+        var tbl = document.createElement('table');
+        var html = '<thead>' + valconcat(columns, 'th') + '</thead>';
+        var rows = values.map(function(v) {
+            return valconcat(v, 'td');
+        });
+        html += '<tbody>' + valconcat(rows, 'tr') + '</tbody>';
+        tbl.innerHTML = html;
+		tbl.className = 'styled-table';
+        return tbl;
+    }
+}();
+
+function error(e) {
+    console.log(e);
+    errorElm.style.height = '2em';
+    errorElm.textContent = e.message;
+}
+
+function noerror() {
+    errorElm.style.height = '0';
+}
+
+var tictime;
+if (!window.performance || !performance.now) {
+    window.performance = {
+        now: Date.now
+    }
+}
+
+function tic() {
+    tictime = performance.now()
+}
+
+function toc(msg) {
+    var dt = performance.now() - tictime;
+    console.log((msg || 'toc') + ": " + dt + "ms");
+}
+
+var outputElm = document.getElementById('output');
+  </script>
+	</body>
+</html>
