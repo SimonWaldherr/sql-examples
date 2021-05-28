@@ -69,11 +69,16 @@
 }
 		</style>
 	</head>
-	<body>
+	<body onload="initX();">
 		<div class="">
 			<div id="container" class="split left"></div>
 			<div class="split right">
 				<h1>SQL-Examples</h1>
+				<label for="queries">Choose a Query:</label>
+				<select name="queries" id="queries" onchange="selectQuery();">
+					<option> </option>
+				</select>
+				<input type="button" name="run" value="run" onclick="execQuery();">
 				<div id="error" class="error"></div>
 				<pre id="output">Results will be displayed here</pre>
 			</div>
@@ -86,6 +91,7 @@
 		<script src="./monaco/editor/editor.main.js"></script>
 		<script src='./sqljs/sql-wasm.js'></script>
 		<script src='./northwinddb.js'></script>
+		<script src='./queries.js'></script>
 
 		<script>
 var db;
@@ -93,14 +99,14 @@ var initValue = `/* Select top 3 customers for each product by sum of sales quan
 
 SELECT * FROM (
 SELECT 
-    od.ProductId               AS ProductId,
-	p.ProductName              AS Product,
-	c.CompanyName              AS Customer, 
-	SUM(od.Quantity)           AS Quantity,
-	ROW_NUMBER() OVER(
-		PARTITION BY od.ProductId
-		ORDER BY SUM(od.Quantity) DESC
-	) AS Ranking
+  od.ProductId               AS ProductId,
+  p.ProductName              AS Product,
+  c.CompanyName              AS Customer, 
+  SUM(od.Quantity)           AS Quantity,
+  ROW_NUMBER() OVER(
+    PARTITION BY od.ProductId
+    ORDER BY SUM(od.Quantity) DESC
+  ) AS Ranking
 FROM OrderDetail     AS od
 LEFT JOIN [Order]    AS o ON o.Id = od.orderid
 LEFT JOIN [Customer] AS c ON o.customerid = c.Id
@@ -117,6 +123,19 @@ var editor = monaco.editor.create(document.getElementById('container'), {
     roundedSelection: true,
     scrollBeyondLastLine: false
 });
+
+var execQuery = function() {
+    var sqlcontent = '';
+    var selection = editor.getModel().getValueInRange(editor.getSelection());
+    var fullcontent = editor.getValue();
+    if (selection.length == 0) {
+        sqlcontent = fullcontent;
+    } else {
+        sqlcontent = selection;
+    }
+    console.log(sqlcontent);
+    execute(sqlcontent);
+};
 
 var myBinding = editor.addCommand(monaco.KeyCode.F5, function() {
     var sqlcontent = '';
@@ -184,7 +203,7 @@ var tableCreate = function() {
         });
         html += '<tbody>' + valconcat(rows, 'tr') + '</tbody>';
         tbl.innerHTML = html;
-		tbl.className = 'styled-table';
+        tbl.className = 'styled-table';
         return tbl;
     }
 }();
@@ -216,6 +235,20 @@ function toc(msg) {
 }
 
 var outputElm = document.getElementById('output');
+
+function initX() {
+    var selectelement = "";
+    for (var prop in sqlqueries) {
+        console.log("o." + prop + " = " + sqlqueries[prop]);
+        selectelement += "<option>" + prop + "</option>";
+    }
+    document.getElementById('queries').innerHTML = selectelement;
+}
+
+function selectQuery() {
+    var selectedValue = document.getElementById('queries').value;
+    editor.setValue(sqlqueries[selectedValue]);
+}
   </script>
 	</body>
 </html>
