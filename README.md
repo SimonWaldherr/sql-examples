@@ -13,7 +13,10 @@ If you like, feel free to add more SQL examples.
 
 ## Play
 
-You can experiment with the examples here: <http://simonwaldherr.github.io/sql-examples/>
+You can experiment with the examples here: <https://simonwaldherr.github.io/sql-examples/>
+
+The playground looks like this:  
+[![Foo](https://raw.githubusercontent.com/SimonWaldherr/sql-examples/gh-pages/sql-examples.png)](https://simonwaldherr.github.io/sql-examples/)
 
 ## License
 
