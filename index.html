@@ -42,7 +42,7 @@
 }
 
 .styled-table thead tr {
-    background-color: #009879;
+    background-color: #006198;
     color: #ffffff;
     text-align: left;
 }
@@ -74,6 +74,10 @@
 			<div id="container" class="split left"></div>
 			<div class="split right">
 				<h1>SQL-Examples</h1>
+				<label for="courses">Choose a Course:</label>
+				<select name="courses" id="courses" onchange="selectCourse();">
+				    <option> </option>
+				</select>
 				<label for="queries">Choose a Query:</label>
 				<select name="queries" id="queries" onchange="selectQuery();">
 					<option> </option>
@@ -95,25 +99,24 @@
 
 		<script>
 var db;
-var initValue = `/* Select top 3 customers for each product by sum of sales quantity */
+var initValue = `/* 
+Here you can enter your queries and execute them with F5.
+You can use the drop-down menus to select the sample queries.
+As an alternative to the F5 key, you can also click on "run" on the right.
 
-SELECT * FROM (
+This query shows you all available tables and columns that are currently loaded in SQLite.
+*/
+
 SELECT 
-  od.ProductId               AS ProductId,
-  p.ProductName              AS Product,
-  c.CompanyName              AS Customer, 
-  SUM(od.Quantity)           AS Quantity,
-  ROW_NUMBER() OVER(
-    PARTITION BY od.ProductId
-    ORDER BY SUM(od.Quantity) DESC
-  ) AS Ranking
-FROM OrderDetail     AS od
-LEFT JOIN [Order]    AS o ON o.Id = od.orderid
-LEFT JOIN [Customer] AS c ON o.customerid = c.Id
-LEFT JOIN [Product]  AS p ON od.ProductId = p.Id
-GROUP BY c.CompanyName, od.ProductId, p.ProductName
-) ProductRankingByCustomer
-WHERE Ranking < 4`;
+  m.name as table_name, 
+  p.name as column_name
+FROM 
+  sqlite_master AS m
+JOIN 
+  pragma_table_info(m.name) AS p
+ORDER BY 
+  m.name, 
+  p.cid`;
 
 var editor = monaco.editor.create(document.getElementById('container'), {
     value: initValue,
@@ -237,17 +240,55 @@ function toc(msg) {
 var outputElm = document.getElementById('output');
 
 function initX() {
-    var selectelement = "";
+    var selectelementCourse = "";
+    var selectelementQuery = "";
+    var courseandquery = "";
+    var courses = [];
+    var queries = [];
+    var initCourse = "";
     for (var prop in sqlqueries) {
-        console.log("o." + prop + " = " + sqlqueries[prop]);
-        selectelement += "<option>" + prop + "</option>";
+        courseandquery = prop.split(" - ");
+        if(initCourse=="") {
+            initCourse = courseandquery[0];
+        }
+        courses[courseandquery[0]] = "";
+        if(initCourse == courseandquery[0]) {
+            queries[courseandquery[1]] = "";
+        }
     }
-    document.getElementById('queries').innerHTML = selectelement;
+    
+    for (var course in courses) {
+        selectelementCourse += "<option>" + course + "</option>";
+    }
+    for (var query in queries) {
+        selectelementQuery += "<option>" + query + "</option>";
+    }
+    document.getElementById('courses').innerHTML = selectelementCourse;
+    document.getElementById('queries').innerHTML = selectelementQuery;
+}
+
+function selectCourse() {
+    var selectedValue = document.getElementById('courses').value;
+    var selectelementQuery = "";
+    var courseandquery = "";
+    var queries = [];
+    for (var prop in sqlqueries) {
+        courseandquery = prop.split(" - ");
+        if(selectedValue == courseandquery[0]) {
+            queries[courseandquery[1]] = "";
+        }
+    }
+
+    for (var query in queries) {
+        selectelementQuery += "<option>" + query + "</option>";
+    }
+    document.getElementById('queries').innerHTML = selectelementQuery;
 }
 
 function selectQuery() {
-    var selectedValue = document.getElementById('queries').value;
-    editor.setValue(sqlqueries[selectedValue]);
+    var selectedCourse = document.getElementById('courses').value;
+    var selectedQuery = document.getElementById('queries').value;
+    editor.setValue(sqlqueries[selectedCourse+" - "+selectedQuery]);
 }
   </script>
 	</body>
