@@ -1,5 +1,7 @@
 # sql-examples
 
+[![DOI](https://zenodo.org/badge/18476308.svg)](https://zenodo.org/badge/latestdoi/18476308) 
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)  
 
 if you like this project, you may also like my [golang-examples](https://github.com/SimonWaldherr/golang-examples) repository.
 
@@ -20,6 +22,6 @@ The playground looks like this:
 
 ## License
 
-Copyright © 2021 Simon Waldherr  
+Copyright © 2025 Simon Waldherr
 See the [LICENSE](https://github.com/SimonWaldherr/sql-examples/blob/master/LICENSE) file for details.
 
