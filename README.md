@@ -22,5 +22,5 @@ The playground looks like this:
 
 ## License
 
-Copyright © 2022 Simon Waldherr
+Copyright © 2025 Simon Waldherr
 See the [LICENSE](https://github.com/SimonWaldherr/sql-examples/blob/master/LICENSE) file for details.
