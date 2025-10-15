@@ -579,6 +579,7 @@ function initX() {
 
 function selectCourse() {
   // no-op: sample queries removed}
+}
 
 function selectQuery() {
   // no-op: sample queries removed
