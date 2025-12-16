@@ -1,9 +1,10 @@
 # sql-examples
 
-[![DOI](https://zenodo.org/badge/18476308.svg)](https://zenodo.org/badge/latestdoi/18476308) 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7015300.svg)](https://doi.org/10.5281/zenodo.7015300) 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)  
 
-if you like this project, you may also like my [golang-examples](https://github.com/SimonWaldherr/golang-examples) repository.
+if you like this project, you may also like my [golang-examples](https://github.com/SimonWaldherr/golang-examples)-repository  
+or my own sql-engine [tinySQL](https://github.com/SimonWaldherr/tinySQL) (which also has a [online/browser-version](https://simonwaldherr.github.io/tinySQL/)).
 
 ## About
 
