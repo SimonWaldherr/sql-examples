@@ -376,12 +376,38 @@ kbd {
   border-color: var(--color-primary);
 }
 
+/* ── Footer ─────────────────────────────────────────── */
+.site-footer {
+  margin-top: 24px;
+  padding: 16px 24px;
+  border-top: 1px solid var(--color-border);
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.site-footer .footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin-bottom: 8px;
+}
+
+.site-footer a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.site-footer a:hover {
+  text-decoration: underline;
+}
+
+.site-footer .footer-meta {
+  opacity: 0.75;
+}
+
 		</style>
 	</head>
 	<body onload="initX();">
-    	<style>#forkongithub a{background:#000;color:#fff;text-decoration:none;font-family:arial,sans-serif;text-align:center;font-weight:bold;padding:5px 40px;font-size:1rem;line-height:2rem;position:relative;transition:0.5s;}#forkongithub a:hover{background:#c11;color:#fff;}#forkongithub a::before,#forkongithub a::after{content:"";width:100%;display:block;position:absolute;top:1px;left:0;height:1px;background:#fff;}#forkongithub a::after{bottom:1px;top:auto;}@media screen and (min-width:400px){#forkongithub{position:absolute;display:block;top:0;right:0;width:200px;overflow:hidden;height:200px;z-index:9999;}#forkongithub a{width:200px;position:absolute;top:60px;right:-60px;transform:rotate(45deg);-webkit-transform:rotate(45deg);-ms-transform:rotate(45deg);-moz-transform:rotate(45deg);-o-transform:rotate(45deg);box-shadow:4px 4px 10px rgba(0,0,0,0.8);}}</style>
-		<span id="forkongithub"><a href="https://github.com/SimonWaldherr/sql-examples" aria-label="Fork SQL Examples on GitHub">Fork me on GitHub</a></span>
-
 		<div role="application" aria-label="SQL Examples playground">
 			<!-- Left: Monaco Editor -->
 			<div id="container"
@@ -466,6 +492,22 @@ kbd {
 						<pre id="output" data-i18n="resultsPlaceholder">Results will be displayed here</pre>
 					</div>
 				</div>
+
+				<footer class="site-footer" aria-label="Site footer">
+					<nav class="footer-links" aria-label="Useful links">
+						<a href="https://github.com/SimonWaldherr/sql-examples" target="_blank" rel="noopener">⭐ GitHub Repository</a>
+						<a href="https://github.com/SimonWaldherr/sql-examples/issues" target="_blank" rel="noopener">🐛 Report an Issue</a>
+						<a href="ChatSQL/" target="_blank" rel="noopener">🤖 ChatSQL (AI Queries)</a>
+						<a href="https://sql.js.org/" target="_blank" rel="noopener">📦 sql.js</a>
+						<a href="https://www.sqlite.org/lang.html" target="_blank" rel="noopener">📖 SQLite Docs</a>
+						<a href="https://github.com/SimonWaldherr/sql-examples/blob/master/LICENSE" target="_blank" rel="noopener">⚖️ MIT License</a>
+					</nav>
+					<p class="footer-meta">
+						Powered by <a href="https://sql.js.org/" target="_blank" rel="noopener">sql.js</a> (SQLite compiled to WebAssembly) &amp;
+						<a href="https://microsoft.github.io/monaco-editor/" target="_blank" rel="noopener">Monaco Editor</a>.
+						Runs entirely in your browser — no server, no data sent.
+					</p>
+				</footer>
 			</main>
 		</div>
 
